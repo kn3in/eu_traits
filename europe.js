@@ -22,7 +22,7 @@ var color = d3.scale.linear()
               .interpolate(d3.interpolateHcl);
 
 // scale bar scales
-var x = d3.scale.linear().range([0, 240]);
+var x = d3.scale.linear().range([0, 320]);
 
 // Europe projection
 var projection = d3.geo.mercator()
@@ -47,10 +47,16 @@ var g = svg.append("g")
            .attr("transform", "translate(140,100)");
 
 // globals so we can change domain w/o rescanning array 
-var height_max;
-var height_min;
-var bmi_max;
-var bmi_min;
+var height_obs_max;
+var height_obs_min;
+var bmi_obs_max;
+var bmi_obs_min;
+var height_est_max;
+var height_est_min;
+var bmi_est_max;
+var bmi_est_min;
+
+
 
 // define xAxis
 var xAxis = d3.svg.axis()
@@ -72,13 +78,18 @@ var xAxis = d3.svg.axis()
 d3.json("final_tj.json", function(error, europe) {
     var subunits = topojson.feature(europe, europe.objects.subunits);
     
-    height_max = d3.min(subunits.features, function(d) { return parseFloat(d.properties.mean_height_obs); });
-    height_min = d3.max(subunits.features, function(d) { return parseFloat(d.properties.mean_height_obs); });
-    bmi_max = d3.min(subunits.features, function(d) { return parseFloat(d.properties.mean_bmi_obs); });
-    bmi_min = d3.max(subunits.features, function(d) { return parseFloat(d.properties.mean_bmi_obs); });
+    height_obs_min = d3.min(subunits.features, function(d) { return parseFloat(d.properties.mean_height_obs); });
+    height_obs_max = d3.max(subunits.features, function(d) { return parseFloat(d.properties.mean_height_obs); });
+    bmi_obs_min = d3.min(subunits.features, function(d) { return parseFloat(d.properties.mean_bmi_obs); });
+    bmi_obs_max = d3.max(subunits.features, function(d) { return parseFloat(d.properties.mean_bmi_obs); });
+    height_est_min = d3.min(subunits.features, function(d) { return parseFloat(d.properties.mean_height_est); });
+    height_est_max = d3.max(subunits.features, function(d) { return parseFloat(d.properties.mean_height_est); });
+    bmi_est_min = d3.min(subunits.features, function(d) { return parseFloat(d.properties.mean_bmi_est); });
+    bmi_est_max = d3.max(subunits.features, function(d) { return parseFloat(d.properties.mean_bmi_est); });
 
-    color.domain([height_max, height_min]);
-    x.domain([height_max, height_min]);
+
+    color.domain([height_est_min, height_est_max]);
+    x.domain([height_est_min, height_est_max]);
 
     svg.selectAll("path")
        .data(subunits.features)
@@ -108,12 +119,37 @@ d3.select("select").on("change", function() {
       var trait = this.value;
 
       // Update domains
-      if(trait.valueOf() == "mean_height_est" || trait.valueOf() == "mean_height_obs") {
-        color.domain([height_max, height_min]);
-        x.domain([height_max, height_min]);
-      } else {
-        color.domain([bmi_max, bmi_min]);
-        x.domain([bmi_max, bmi_min]);
+      // When one would like to compare observed vs estimated
+      // on the same color scale, keep domain from
+      // observed data cause estimated domain will be smaller
+      // however it will make it more difficult to see
+      // for height that observed and estimated patterns follow each other
+      // if(trait.valueOf() == "mean_height_est" || trait.valueOf() == "mean_height_obs") {
+      //   color.domain([height_max, height_min]);
+      //   x.domain([height_max, height_min]);
+      // } else {
+      //   color.domain([bmi_max, bmi_min]);
+      //   x.domain([bmi_max, bmi_min]);
+      // }
+      
+      // Update domain
+      switch(trait.valueOf()) {
+        case "mean_height_est" :
+          color.domain([height_est_min, height_est_max]);
+          x.domain([height_est_min, height_est_max]);
+          break;
+        case "mean_height_obs" :
+          color.domain([height_obs_min, height_obs_max]);
+          x.domain([height_obs_min, height_obs_max]);
+          break;
+        case "mean_bmi_est" :
+          color.domain([bmi_est_min, bmi_est_max]);
+          x.domain([bmi_est_min, bmi_est_max]);
+          break;
+        case "mean_bmi_obs" :
+          color.domain([bmi_obs_min, bmi_obs_max]);
+          x.domain([bmi_obs_min, bmi_obs_max]);
+          break;
       }
 
       // update axis 
