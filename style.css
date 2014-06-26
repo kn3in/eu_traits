@@ -6,10 +6,20 @@ body {
   font-family: "Helvetica Neue", Helvetica;
 }
 
-#chart, #header, #footer {
+#header, #footer {
   position: absolute;
   top: 0;
 }
+
+#chart {
+  position: relative;
+  height: 1040px;
+}
+
+.trait {
+  position: absolute;
+}
+
 
 #header, #footer {
   z-index: 1;
