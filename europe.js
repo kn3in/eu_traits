@@ -20,10 +20,19 @@ var pad = 20;
 
 var look_up_pane_pos = {
   "mean_height_est" : { "top" : marginTop,      "left" : pad },
-  "mean_height_obs" : { "top" : marginTop,      "left" : w + pad },
-  "mean_bmi_est"    : { "top" : h + marginTop,  "left" : pad },
-  "mean_bmi_obs"    : { "top" : h + marginTop,  "left" : w + pad },
+  "mean_height_obs" : { "top" : marginTop,      "left" : w },
+  "mean_bmi_est"    : { "top" : h,  "left" : pad },
+  "mean_bmi_obs"    : { "top" : h,  "left" : w },
 };
+
+var look_up_figure = {
+  "mean_height_est" : "A",
+  "mean_height_obs" : "B",
+  "mean_bmi_est"    : "C",
+  "mean_bmi_obs"    : "D",
+};
+
+
 
 // color scale 
 var color = d3.scale.linear()
@@ -92,7 +101,9 @@ d3.json("final_tj.json", function(error, europe) {
 
 traits.forEach(function(trait) {
       var svg_container = d3.select("#" + trait);
-  
+      
+      svg_container.append("text").attr("class", "caption").attr("y", 20).text(look_up_figure[trait]);
+
       trait_max = d3.max(subunits.features, function(d) { return parseFloat(d.properties[trait]); });
       trait_min = d3.min(subunits.features, function(d) { return parseFloat(d.properties[trait]); });
       
@@ -102,7 +113,7 @@ traits.forEach(function(trait) {
 
       var g = svg_container.append("g")
                            .attr("class", "key")
-                           .attr("transform", "translate(20, 80)");
+                           .attr("transform", "translate(30, 75)");
 
       var xAxis =         d3.svg.axis()
                             .scale(x)
