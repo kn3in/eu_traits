@@ -27,3 +27,5 @@ set_up:
 	npm install -g http-server
 help:
 	open "http://chimera.labs.oreilly.com/books/1230000000345/index.html"
+print:
+	wkhtmltopdf index.html out.pdf
