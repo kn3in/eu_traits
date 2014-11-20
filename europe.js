@@ -107,7 +107,7 @@ traits.forEach(function(trait) {
       trait_max = d3.max(subunits.features, function(d) { return parseFloat(d.properties[trait]); });
       trait_min = d3.min(subunits.features, function(d) { return parseFloat(d.properties[trait]); });
       
-      color.domain([trait_min, trait_max]);
+      color.domain([trait_max, trait_min]);
       x.domain([trait_min, trait_max]);
 
 
